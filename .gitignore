@@ -3,8 +3,10 @@ frontend/public/build/
 
 .DS_Store
 
-backend/.venv/
 
 __pycache__/
 *.pyc
 
+.venv
+.env
+uploads/
