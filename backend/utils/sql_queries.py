@@ -20,10 +20,24 @@ CREATE TABLE IF NOT EXISTS transactions (
     ON DELETE CASCADE
 );
 """
-INSERT = "INSERT INTO transactions (category_id, transaction_date, post_date, description, category, type, amount, memo) VALUES (%s, %s, %s, %s, %s, %s, %s, %s);"
+INSERT_TRANSACTION = "INSERT INTO transactions (category_id, transaction_date, post_date, description, category, type, amount, memo) VALUES (%s, %s, %s, %s, %s, %s, %s, %s);"
 
-INSERT_CATEGORY_RETURN_ID = "INSERT INTO categories (name) VALUES (%s) RETURNING category_id;"
-# INSERT_TRANSACTION = "INSERT INTO transactions (category_id, date, name, total) VALUES (%s, %s, %s, %s);"
+INSERT_CATEGORY_RETURN_ID = """
+INSERT INTO categories (name)
+VALUES (%s)
+ON CONFLICT (name) DO UPDATE SET name = EXCLUDED.name
+RETURNING category_id;
+"""
 
 SELECT_ALL = "SELECT * FROM transactions;"
 SELECT_ALL_CATEGORIES = "SELECT * FROM categories;" 
+
+SELECT_TRANSACTIONS_BY_CATEGORY = """
+SELECT 
+t.transaction_date,
+t.description,
+t.amount
+FROM transactions t
+JOIN categories c ON t.category_id = c.category_id
+WHERE c.name = %s;
+"""

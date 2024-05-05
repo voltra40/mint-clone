@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import os
-from services.db_accessor import get_all_categories, get_all_transactions, add_new_category
+from services.db_accessor import get_all_categories, get_all_transactions, add_new_category, get_transactions_by_category
 from services.process_file import process_and_load_file
 from werkzeug.utils import secure_filename
 
@@ -29,14 +29,15 @@ def get_all():
 def get_totals():
     return getAllTotals()
 
-# @app.route('/api/auto_categories', methods=['GET'])
-# def auto_categories_api():
-#     return jsonify(process_unique_categories())
-
 @app.post("/api/add_new_category")
 def category_api():
     return add_new_category()
 
+@app.route('/api/transactions', methods=['GET'])
+def transactions_by_category_api():
+    transactions = get_transactions_by_category()
+    return jsonify(transactions)
+    
 # get all unique categories
 
 # @app.post("/api/transaction")

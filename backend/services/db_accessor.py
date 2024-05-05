@@ -3,7 +3,6 @@ import psycopg2
 from dotenv import load_dotenv
 from utils.helpers import convert_date_format
 from flask import request
-import math
 
 from utils.sql_queries import (
   CREATE_CATEGORY_TABLE,
@@ -11,7 +10,8 @@ from utils.sql_queries import (
   CREATE_TRANSACTIONS_TABLE,
   SELECT_ALL,
   SELECT_ALL_CATEGORIES,
-  INSERT
+  INSERT_TRANSACTION,
+  SELECT_TRANSACTIONS_BY_CATEGORY
 )
 
 load_dotenv()
@@ -48,7 +48,7 @@ def get_or_create_category(cursor, row):
 
 def insert_transaction(cursor, category_id, row):
   cursor.execute(
-    INSERT,
+    INSERT_TRANSACTION,
     (category_id, convert_date_format(row[0]), convert_date_format(row[1]), row[2], row[3], row[4], row[5], row[6])
   )
 
@@ -79,9 +79,14 @@ def add_new_category():
   except Exception as e:
     return {"error": str(e)}, 500
   
-def auto_create_categories(unique_categories):
-  with get_database_connection().cursor() as cursor:
-    for category in unique_categories:
-      if category != "NaN":
-        cursor.execute(INSERT_CATEGORY_RETURN_ID, (category,))
-  
+def get_transactions_by_category():
+  try:
+    category_name = request.args.get("category")
+    print(f"category name: {category_name}")
+    print(f"category name type: {type(category_name)}")
+    with get_database_connection().cursor() as cursor:
+      cursor.execute(SELECT_TRANSACTIONS_BY_CATEGORY, (category_name,))
+      data = cursor.fetchall()
+      return data
+  except Exception as e:
+    return {"error": str(e)}, 500

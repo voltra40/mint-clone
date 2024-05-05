@@ -7,8 +7,3 @@ def convert_date_format(date_string):
     except Exception:
       date_obj = datetime.now(timezone.utc)
     return date_obj.strftime('%Y-%m-%d')
-  
-def get_all_unique_categories(data):
-  unique_categories = data['Category'].unique().tolist()
-  print(f"unique categories: {unique_categories}")
-  return unique_categories
